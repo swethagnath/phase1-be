@@ -32,4 +32,31 @@ class AuthController extends Controller
 
         return response($response, 201);
     }
+
+    public function login(Request $request){
+        $fields = $request -> validate([
+            'first_name' => 'required|string',
+            'password' => 'required|string'
+        ]);
+        
+        // check email
+        $user = User::where('first_name', $fields['first_name']) -> first();
+
+       //check password
+            if(!$user || !Hash::check($fields['password'],   $user->password)){
+                return response([
+                    'message' => 'Bad cred'
+                ], 401);
+            }
+
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token
+        ];
+
+        return response($response, 201);
+    }
+
 }
