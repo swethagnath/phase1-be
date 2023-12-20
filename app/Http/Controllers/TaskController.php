@@ -80,9 +80,11 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Task $task)
+    public function update(Request $request,  $id)
     {
-        //
+        $task = Task::find($id);
+        $task -> update($request -> all());
+        return $task;
     }
 
     /**
