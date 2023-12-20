@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -39,7 +40,15 @@ class TaskController extends Controller
             'name' => 'required',
             'description' => 'required'
         ]);
-        return Task::create($request -> all());
+        
+        $user =  auth()->user()->id;
+        $data = [
+            'name' => $request-> input('name'),
+            'description' => $request->input('description'),
+            'user_id' => $user 
+        ];
+
+        return Task::create($data);
     }
 
     /**
@@ -86,4 +95,24 @@ class TaskController extends Controller
     {
         //
     }
+
+    /**
+     * list of tasks of a user.
+     *
+     * @param  \App\Models\Task  $task
+     * @return \Illuminate\Http\Response
+     */
+    public function userTasks(Task $task)
+    {
+        $user_id = auth()->user()->id;
+
+        $user = Task::whereUserId($user_id)->get();
+
+        $response = [
+            'tasks' =>  $user,
+        ];
+
+        return response($response, 201);
+    }
+
 }
